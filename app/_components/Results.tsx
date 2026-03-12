@@ -16,7 +16,16 @@ import {
 } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 
-function VendorItem({ vendor, boards }: { vendor: Vendor; boards: Board[] }) {
+type VendorItemProps = { vendor: Vendor; boards: Board[] };
+
+type BoardItemProps = { board: Board };
+
+type ResultsProps = {
+  vendors: Vendor[];
+  boardsByVendor: Record<string, Board[]>;
+};
+
+function VendorItem({ vendor, boards }: VendorItemProps) {
   return (
     <AccordionItem value={`item-${vendor.slug}`}>
       <AccordionTrigger>
@@ -40,7 +49,7 @@ function VendorItem({ vendor, boards }: { vendor: Vendor; boards: Board[] }) {
   );
 }
 
-function BoardItem({ board }: { board: Board }) {
+function BoardItem({ board }: BoardItemProps) {
   return (
     <div className="py-2 pb-2">
       <Collapsible className="rounded-md data-[state=open]:bg-muted">
@@ -76,11 +85,6 @@ function BoardItem({ board }: { board: Board }) {
     </div>
   );
 }
-
-type ResultsProps = {
-  vendors: Vendor[];
-  boardsByVendor: Record<string, Board[]>;
-};
 
 // This component is responsible for rendering the results of the search
 // It could be broken down a bit more given time, and a table component is probably a better way forward
