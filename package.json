@@ -1,6 +1,6 @@
 {
-  "name": "arm-vendor-based-aggregation",
-  "version": "0.0.1",
+  "name": "vendor-based-aggregation",
+  "version": "1.0.0",
   "type": "module",
   "private": true,
   "scripts": {
