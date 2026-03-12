@@ -16,6 +16,67 @@ import {
 } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 
+function VendorItem({ vendor, boards }: { vendor: Vendor; boards: Board[] }) {
+  return (
+    <AccordionItem value={`item-${vendor.slug}`}>
+      <AccordionTrigger>
+        <div className="flex flex-col items-start">
+          <div className="align-left flex items-center gap-2 text-lg">
+            <div>{vendor.name}</div>
+            <Badge className="grow">
+              {boards.length} Boards
+            </Badge>
+          </div>
+        </div>
+      </AccordionTrigger>
+      <AccordionContent>
+        <div className="max-h-72 space-y-2 overflow-y-auto pr-3 pb-2">
+          {boards.map((board) => (
+            <BoardItem key={board.id} board={board} />
+          ))}
+        </div>
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
+
+function BoardItem({ board }: { board: Board }) {
+  return (
+    <div className="py-2 pb-2">
+      <Collapsible className="rounded-md data-[state=open]:bg-muted">
+        <CollapsibleTrigger asChild>
+          <div className="align-left flex items-center gap-2 text-lg">
+            <Button
+              variant="ghost"
+              className="group w-full text-base"
+            >
+              {board.name}
+              <Badge>
+                {board.devices.length} Devices
+              </Badge>
+              <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
+            </Button>
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
+          {board.devices.map((device) => (
+            <div
+              key={device.id}
+              className="flex w-full gap-2 border-t pt-2"
+            >
+              <div>{device.name}</div>
+              <div className="flex-1 pr-2 text-right">
+                {/* Assuming there is one core */}
+                {device.processors?.[0]?.core}
+              </div>
+            </div>
+          ))}
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
+  );
+}
+
 type ResultsProps = {
   vendors: Vendor[];
   boardsByVendor: Record<string, Board[]>;
@@ -33,64 +94,13 @@ export function Results({ vendors, boardsByVendor }: ResultsProps) {
             <Accordion type="multiple" className="w-full">
               {vendors
                 .filter((v) => boardsByVendor[v.slug]?.length > 0)
-                .map((vendor) => {
-                  const boards = boardsByVendor[vendor.slug];
-                  return (
-                    <AccordionItem
-                      key={vendor.slug}
-                      value={`item-${vendor.slug}`}
-                    >
-                      <AccordionTrigger>
-                        <div className="flex flex-col items-start">
-                          <div className="align-left flex items-center gap-2 text-lg">
-                            <div>{vendor.name}</div>
-                            <Badge className="grow">
-                              {boards.length} Boards
-                            </Badge>
-                          </div>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="max-h-72 space-y-2 overflow-y-auto pr-3 pb-2">
-                          {boards.map((board) => (
-                            <div key={board.id} className="py-2 pb-2">
-                              <Collapsible className="rounded-md data-[state=open]:bg-muted">
-                                <CollapsibleTrigger asChild>
-                                  <div className="align-left flex items-center gap-2 text-lg">
-                                    <Button
-                                      variant="ghost"
-                                      className="group w-full text-base"
-                                    >
-                                      {board.name}
-                                      <Badge>
-                                        {board.devices.length} Devices
-                                      </Badge>
-                                      <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
-                                    </Button>
-                                  </div>
-                                </CollapsibleTrigger>
-                                <CollapsibleContent className="flex flex-col items-start gap-2 p-2.5 pt-0 text-sm">
-                                  {board.devices.map((device) => (
-                                    <div
-                                      key={device.id}
-                                      className="flex w-full gap-2 border-t pt-2"
-                                    >
-                                      <div>{device.name}</div>
-                                      <div className="flex-1 pr-2 text-right">
-                                        {/* Assuming there is one core */}
-                                        {device.processors?.[0]?.core}
-                                      </div>
-                                    </div>
-                                  ))}
-                                </CollapsibleContent>
-                              </Collapsible>
-                            </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  );
-                })}
+                .map((vendor) => (
+                  <VendorItem
+                    key={vendor.slug}
+                    vendor={vendor}
+                    boards={boardsByVendor[vendor.slug]}
+                  />
+                ))}
             </Accordion>
           ) : (
             <p className="py-8 text-center text-muted-foreground">
