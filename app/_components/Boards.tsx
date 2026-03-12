@@ -5,10 +5,10 @@ import { Results } from './Results';
 import { Board, Vendor } from '../queries/boards';
 import { useRouter } from 'next/navigation';
 
-interface BoardsProps {
+type BoardsProps =  {
   vendors: Vendor[];
   boardsByVendor: Record<string, Board[]>;
-}
+};
 
 export function Boards({ vendors, boardsByVendor }: BoardsProps) {
   const router = useRouter();
