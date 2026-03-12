@@ -1,4 +1,4 @@
-# Vendor-Based Aggregation
+# Vendor Based Aggregation
 
 A Next.js web application for aggregating arm vendors, boards and devices. It provides a user-friendly basic hierarchical interface to browse and filter the available information from various vendors.
 
