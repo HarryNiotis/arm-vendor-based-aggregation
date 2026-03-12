@@ -2,27 +2,27 @@
 
 A Next.js web application for aggregating arm vendors, boards and devices. It provides a user-friendly basic hierarchical interface to browse and filter the available information from various vendors.
 
-## Task Overview
+## Challenge Overview
 
-Although the task description stated that I should spend 3 hours on it, I ended up spending some more. The main reason was that I had the time available and wanted to see how far I can take it before deciding I should stop and submit it.
+The challenge stated that I should spend up to 3 hours, but I ended up spending some more. Reason being that I had the time available and also wanted to see how far I can take it before deciding I should stop and submit it.
 
-My plan to complete in the task time window was:
+My plan to complete in the challenge time window was:
 
-- Bootstrap a Next.js application with tailwindCSS and shadcn, tooling I have worked recently and provide excellent CLIs and Agent skills to create it fast
-- Appreciate the data, think about the UX and create a basic hierarchical UI using mocks. I inspected the responses of the GraphQL service and created some mocks to help me scaffold the UI. I also took inspiration from https://www.keil.arm.com/devices/ for how it should look
-- Wire up the GraphQL API to give the whole dataset and wire it up to the UI, replacing the mocks
+- Bootstrap a Next.js application with Tailwind CSS and shadcn. This is tooling that I have worked recently and provide excellent CLIs to move fast
+- Appreciate the data, think about the UX and create a basic hierarchical UI. I inspected the responses of the GraphQL service and created some mocks to help me scaffold the UI. I took inspiration from https://www.keil.arm.com/devices/ for how it should look
+- Wire up the GraphQL API with the dataset as described in the challenge. Then wire it up to the UI, replacing the mocks
 
-I achieved all of the above in the 3 hour window, so I could submit the application at that point. This had the full dataset available but no filtering. Since I had the time available I decided to add the filtering and tidy up the UI a bit.
+I achieved all of the above in the 3 hour window, so I could submit the application at that point. This had the full dataset available but no filtering. Since I had the time available I decided to add the filtering and tidy up the UI a bit more.
 
-So the second part of the plan was
+So the follow up part of the plan was
 
-- To fetch the data server side only and try leverage the Apollo caching
+- Try to leverage the Apollo GraphQL caching
 - Use URL state management to drive the filters
 - Add some basic tests for the components I created
 
-I introduced a name and vendor search. The idea is to search for a board or device name and optionally select a vendor.
-Depending on the user input, I initiate requests with one or two url parameters that are then handled on the server to filter the data and return it back. The filters on the UI are also persisted based on them.
-This allow for browser navigation, leveraging the browser cache, bookmarks and enables the app for future API extensibility.
+I introduced a name and vendor search. The user can search for a board/ device partial name and optionally select a vendor.
+I then initiate create the request url based on the selections. The parameters are then handled on the server to filter the dataset and return it back. The filters on the UI are also persisted based on the url parameters.
+This allows for browser navigation, leveraging the browser cache, bookmarks but, more importantly, enables the app for future API extensibility.
 
 ### Further improvements
 
@@ -37,17 +37,15 @@ A number of improvements could follow given time
 
 ### Core Technologies
 
-- **[Next.js 16](https://nextjs.org/)** - Latest version of Next.js with Turbopack
-- **[TypeScript](https://www.typescriptlang.org/)** - Fully typed codebase
+- **[Next.js 16](https://nextjs.org/)** - Latest version of Next.js with Turbopack and TypeScript
 - **[Apollo Client 4](https://www.apollographql.com/docs/react/)** - GraphQL client for data fetching with caching
 - **[Tailwind CSS 4](https://tailwindcss.com/)** - Utility-first CSS framework for responsive design
-- **[shadcn/ui](https://ui.shadcn.com/)** - Establish React components built on Radix UI and Tailwind CSS
+- **[shadcn ui](https://ui.shadcn.com/)** - Popular React components built on Radix UI and Tailwind CSS
 
 ### Development Tools
 
 - **ESLint** - Code quality and style enforcement
 - **Prettier** - Code formatting
-- **PostCSS** - CSS preprocessing with Tailwind
 - **shadcn CLI** - Quickly bootstrap the app with a style preset and allows quick adding of shadcn components when needed (https://ui.shadcn.com/docs/cli)
 - **Copilot** - Added GraphQL and shadcn skills to help scaffold the UI and develop more efficiently; also used for writing tests
 
