@@ -1,83 +1,104 @@
-# ARM Vendor-Based Aggregation
+# Vendor-Based Aggregation
 
-A modern web application for aggregating and managing ARM vendor boards and devices. This application provides a user-friendly interface to browse, filter, and organize hardware information from various ARM vendors.
+A Next.js web application for aggregating arm vendors, boards and devices. It provides a user-friendly basic hierarchical interface to browse and filter the available information from various vendors.
 
-## Overview
+## Task Overview
 
-This project is built with modern web technologies and best practices:
+Although the task description stated that I should spend 3 hours on it, I ended up spending some more. The main reason was that I had the time available and wanted to see how far I can take it before deciding I should stop and submit it.
+
+My plan to complete in the task time window was:
+
+- Bootstrap a Next.js application with tailwindCSS and shadcn, tooling I have worked recently and provide excellent CLIs and Agent skills to create it fast
+- Appreciate the data, think about the UX and create a basic hierarchical UI using mocks. I inspected the responses of the GraphQL service and created some mocks to help me scaffold the UI. I also took inspiration from https://www.keil.arm.com/devices/ for how it should look
+- Wire up the GraphQL API to give the whole dataset and wire it up to the UI, replacing the mocks
+
+I achieved all of the above in the 3 hour window, so I could submit the application at that point. This had the full dataset available but no filtering. Since I had the time available I decided to add the filtering and tidy up the UI a bit.
+
+So the second part of the plan was
+
+- To fetch the data server side only and try leverage the Apollo caching
+- Use URL state management to drive the filters
+- Add some basic tests for the components I created
+
+I introduced a name and vendor search. The idea is to search for a board or device name and optionally select a vendor.
+Depending on the user input, I initiate requests with one or two url parameters that are then handled on the server to filter the data and return it back. The filters on the UI are also persisted based on them.
+This allow for browser navigation, leveraging the browser cache, bookmarks and enables the app for future API extensibility.
+
+### Further improvements
+
+A number of improvements could follow given time
+
+- Fetching of all the data at load is inefficient and relies on caching. There is expensive filtering logic in the server that happens on each request, regardless of caching. Having inspected the GraphQL endpoints, we could switch to using operations like `searchBoards` and `searchDevices` to optimize filtering. Since we have URL state management, it is a question of handling the search parameters accordingly
+- The UI is built with a combination of Accordion and Collapsible components from shadcn. It does not support any pagination and navigation can be a bit tricky. Ideally this should be replaced with a proper headless table like TanStack table that can support a number of scenarios and UI variants.
+- You can only select one vendor. This can be extended to allow multiple selections and leverage the URL parameters accordingly
+- Boards with no devices are visible, this can be improved
+- There is only one root route in the app. Ideally we would break some of the logic in more routes, so we can also support board and device overviews.
+- There are some tests, written quickly with the help of Copilot, but ideally we would need a more comprehensive suite
 
 ### Core Technologies
 
-- **[Next.js 16](https://nextjs.org/)** - Latest version of Next/js with Turbopack
-- **[TypeScript](https://www.typescriptlang.org/)** - Fully typed codebase for better development experience and fewer runtime errors
+- **[Next.js 16](https://nextjs.org/)** - Latest version of Next.js with Turbopack
+- **[TypeScript](https://www.typescriptlang.org/)** - Fully typed codebase
 - **[Apollo Client 4](https://www.apollographql.com/docs/react/)** - GraphQL client for data fetching with caching
 - **[Tailwind CSS 4](https://tailwindcss.com/)** - Utility-first CSS framework for responsive design
-- **[shadcn/ui](https://ui.shadcn.com/)** - High-quality React components built on Radix UI and Tailwind CSS
+- **[shadcn/ui](https://ui.shadcn.com/)** - Establish React components built on Radix UI and Tailwind CSS
 
 ### Development Tools
 
 - **ESLint** - Code quality and style enforcement
 - **Prettier** - Code formatting
 - **PostCSS** - CSS preprocessing with Tailwind
+- **shadcn CLI** - Quickly bootstrap the app with a style preset and allows quick adding of shadcn components when needed (https://ui.shadcn.com/docs/cli)
+- **Copilot** - Added GraphQL and shadcn skills to help scaffold the UI and develop more efficiently; also used for writing tests
 
 ## Installation
 
 ### Prerequisites
 
 - **Node.js**: v20 or higher
-- **npm**: Package manager
 
 ### Steps
 
-1. **Clone the repository:**
-
-   ```bash
-   git clone <repository-url>
-   cd arm-vendor-based-aggregation
-   ```
-
-2. **Install dependencies:**
+1. **Install dependencies:**
 
    ```bash
    npm install
    ```
 
-### Environment Configuration
+2. **Environment Configuration**
 
-Create a `.env.local` file in the root directory with the following variables:
+   Create a `.env.local` file in the root directory with the following variables:
 
-```bash
-# GraphQL API endpoint
-NEXT_PUBLIC_GRAPHQL_URI=<your-graphql-api-url>
-```
+   ```bash
+   # GraphQL API endpoint
+   NEXT_PUBLIC_GRAPHQL_URI=<your-graphql-api-url>
+   ```
 
-Replace `<your-graphql-api-url>` with your GraphQL API endpoint (e.g., `https://api.example.com/graphql`).
+   Replace `<your-graphql-api-url>` with your GraphQL API endpoint (e.g., `https://api.example.com/graphql`).
 
-### Development Server
+3. **Build and run for production:**
 
-Start the development server with Turbopack:
+   Build the application:
 
-```bash
-npm run dev
-```
+   ```bash
+   npm run build
+   ```
 
-The application will be available at `http://localhost:3000`
+   Start the production server:
 
-### Building for Production
+   ```bash
+   npm start
+   ```
 
-Build the application for production:
+   The application will be available at `http://localhost:3000`
 
-```bash
-npm run build
-```
+4. **(Optional) Start the development server:**
 
-### Running the Production Build
+   ```bash
+   npm run dev
+   ```
 
-Start the production server:
-
-```bash
-npm start
-```
+   The application will be available at `http://localhost:3000`
 
 ### Additional Commands
 
@@ -110,7 +131,11 @@ npm start
 │   └── _components/             # App components
 │       ├── Boards.tsx
 │       ├── Filters.tsx
-│       └── Results.tsx
+│       ├── Results.tsx
+│       └── __tests__/           # Component tests
+│           ├── Boards.test.tsx
+│           ├── Filters.test.tsx
+│           └── Results.test.tsx
 ├── api/                          # API configuration
 │   ├── ApolloClient.ts          # Apollo Client setup
 │   └── ApolloWrapper.tsx        # Apollo provider wrapper
@@ -119,16 +144,11 @@ npm start
 │   └── ui/                       # shadcn/ui components
 ├── lib/
 │   └── utils.ts                 # Utility functions
-└── public/                       # Static assets
+├── public/                       # Static assets
+├── vitest.config.ts             # Vitest configuration
+├── vitest.setup.ts              # Vitest setup file
+└── package.json                 # Project dependencies and scripts
 ```
-
-## Features
-
-- **Board Data Management** - View and filter ARM vendor boards
-- **Device Information** - Browse devices associated with each board
-- **Dark Mode Support** - Theme switching with next-themes
-- **Responsive Design** - Mobile-friendly interface with Tailwind CSS
-- **Type-Safe GraphQL** - Type-safe queries with Apollo Client and TypeScript
 
 ## Getting Help
 
@@ -138,3 +158,5 @@ For more information:
 - [Apollo Client Documentation](https://www.apollographql.com/docs/react/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [shadcn/ui Documentation](https://ui.shadcn.com/)
+- [Vitest Documentation](https://vitest.dev/)
+- [React Testing Library Documentation](https://testing-library.com/react)

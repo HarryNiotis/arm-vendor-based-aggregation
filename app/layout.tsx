@@ -1,43 +1,42 @@
-import { Geist_Mono, Roboto } from "next/font/google"
+import { Geist_Mono, Roboto } from 'next/font/google';
 
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils"
+import './globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
+import { cn } from '@/lib/utils';
 
-const roboto = Roboto({ subsets: ["latin"], variable: "--font-sans" })
+const roboto = Roboto({ subsets: ['latin'], variable: '--font-sans' });
 
 const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+  subsets: ['latin'],
+  variable: '--font-mono',
+});
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html
       lang="en"
       suppressHydrationWarning
       className={cn(
-        "antialiased",
+        'antialiased',
         fontMono.variable,
-        "font-sans",
+        'font-sans',
         roboto.variable
       )}
     >
       <body>
         <ThemeProvider>
           <div className="flex min-h-screen flex-col bg-background">
-            {/* Header */}
             <header className="border-b px-6 py-4">
-              <h1 className="text-2xl font-bold">Arm Keil Devices</h1>
+              <h1 className="text-2xl font-bold">Vendor Aggregation</h1>
             </header>
             {children}
           </div>
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

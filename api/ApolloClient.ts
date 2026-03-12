@@ -7,7 +7,7 @@ import {
 
 export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
   return new ApolloClient({
-    cache: new InMemoryCache(),
+    cache: new InMemoryCache({ resultCaching: true }),
     link: new HttpLink({
       uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
     }),
