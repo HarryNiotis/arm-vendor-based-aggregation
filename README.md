@@ -33,7 +33,7 @@ A number of improvements could follow given time
 - You can only select one vendor. This can be extended to allow multiple selections and leverage the URL parameters accordingly
 - Boards with no devices are visible, this can be improved
 - There is only one root route in the app. Ideally we would break some of the logic in more routes, so we can also support board and device overviews.
-- There are some tests, written quickly with the help of Copilot, but ideally we would need a more comprehensive suite
+- There are tests for most of the components, written mainly with the help of Copilot, but ideally we would need a more comprehensive suite
 
 ### Core Technologies
 
