@@ -4,15 +4,15 @@ A Next.js web application for aggregating arm vendors, boards and devices. It pr
 
 ## Challenge Overview
 
-The challenge stated that I should spend up to 3 hours, but I ended up spending some more. Reason being that I had the time available and also wanted to see how far I can take it before deciding I should stop and submit it.
+The challenge stated that I should spend up to 3 hours, but since I was advised there is no time limit, I ended up spending around 7. I had the time available and also wanted to see how far I can take it before deciding I should stop and submit it.
 
-My plan to complete in the challenge time window was:
+I decided to try and complete the following tasks in the 3 hour time window as a first pass:
 
 - Bootstrap a Next.js application with Tailwind CSS and shadcn. This is tooling that I have worked recently and provide excellent CLIs to move fast
 - Appreciate the data, think about the UX and create a basic hierarchical UI. I inspected the responses of the GraphQL service and created some mocks to help me scaffold the UI. I took inspiration from https://www.keil.arm.com/devices/ for how it should look
 - Wire up the GraphQL API with the dataset as described in the challenge. Then wire it up to the UI, replacing the mocks
 
-I achieved all of the above in the 3 hour window, so I could submit the application at that point. This had the full dataset available but no filtering. Since I had the time available I decided to add the filtering and tidy up the UI a bit more.
+I achieved all of the above in that window, so I could submit the application at that point. This had the full dataset available but no filtering. Since I had the time available I then decided to add the filtering and tidy up the UI a bit more.
 
 So the follow up part of the plan was
 
