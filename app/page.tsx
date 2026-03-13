@@ -39,27 +39,16 @@ export default async function Page({ searchParams }: PageProps) {
       boardsByVendor[board.vendor.slug] = [];
     }
 
-    // add all the boards to the map if we don't have any filters
-    if (!vendor && !search) {
-      boardsByVendor[board.vendor.slug].push(board);
-      return;
-    }
+    const matchesVendor = !vendor || board.vendor.slug === vendor;
+    const matchesSearch =
+      !search ||
+      board.name.toLowerCase().includes(search) ||
+      board.devices.some((device) =>
+        device.name.toLowerCase().includes(search)
+      );
 
-    // if we have a vendor filter, only add the boards that match the vendor
-    if (vendor && board.vendor.slug === vendor) {
+    if (matchesVendor && matchesSearch) {
       boardsByVendor[board.vendor.slug].push(board);
-    }
-
-    // if we have a search filter, only add the boards that match the search
-    if (search) {
-      if (
-        board.name.toLowerCase().includes(search) ||
-        board.devices.some((device) =>
-          device.name.toLowerCase().includes(search)
-        )
-      ) {
-        boardsByVendor[board.vendor.slug].push(board);
-      }
     }
   });
 
