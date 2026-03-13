@@ -1,14 +1,26 @@
-import { ApolloNextAppProvider, makeClient } from 'apollo-next-app';
-import { InMemoryCache } from '@apollo/client';
+'use client';
+
+import {
+  ApolloNextAppProvider,
+  ApolloClient,
+  InMemoryCache,
+} from '@apollo/client-integration-nextjs';
 import { HttpLink } from '@apollo/client';
+import { ReactNode } from 'react';
 
-const client = makeClient({
-  link: new HttpLink({ uri: process.env.NEXT_PUBLIC_GRAPHQL_URI }),
-  cache: new InMemoryCache(),
-});
+function makeClient() {
+  return new ApolloClient({
+    link: new HttpLink({ uri: process.env.NEXT_PUBLIC_GRAPHQL_URI }),
+    cache: new InMemoryCache(),
+  });
+}
 
-const ApolloWrapper = ({ children }) => {
-  return <ApolloNextAppProvider client={client}>{children}</ApolloNextAppProvider>;
+const ApolloWrapper = ({ children }: { children: ReactNode }) => {
+  return (
+    <ApolloNextAppProvider makeClient={makeClient}>
+      {children}
+    </ApolloNextAppProvider>
+  );
 };
 
 export default ApolloWrapper;

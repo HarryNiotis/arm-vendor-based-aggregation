@@ -1,26 +1,71 @@
 'use client';
 
+import { useMemo } from 'react';
+import { useSuspenseQuery } from '@apollo/client/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Filters } from './Filters';
 import { Results } from './Results';
-import { Board, Vendor } from '../queries/boards';
-import { useRouter } from 'next/navigation';
+import { Board, Vendor, GET_BOARDS } from '../queries/boards';
 
-type BoardsProps =  {
-  vendors: Vendor[];
-  boardsByVendor: Record<string, Board[]>;
+type GetBoardsData = {
+  boards: Board[];
 };
 
-export function Boards({ vendors, boardsByVendor }: BoardsProps) {
+export function Boards() {
+  const { data } = useSuspenseQuery<GetBoardsData>(GET_BOARDS);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // Handle filter changes by updating the URL search parameters
-  const handleFilter = (search: string, vendor: string) => {
+  const search = searchParams.get('search')
+    ? decodeURIComponent(searchParams.get('search')!)
+    : '';
+  const vendor = searchParams.get('vendor')
+    ? decodeURIComponent(searchParams.get('vendor')!)
+    : '';
+
+  const vendors: Vendor[] = useMemo(() => {
+    const seen = new Set<string>();
+    return data.boards.reduce<Vendor[]>((acc, board) => {
+      if (!seen.has(board.vendor.slug)) {
+        seen.add(board.vendor.slug);
+        acc.push(board.vendor);
+      }
+      return acc;
+    }, []);
+  }, [data.boards]);
+
+  const boardsByVendor: Record<string, Board[]> = useMemo(() => {
+    const result: Record<string, Board[]> = {};
+    const lowerSearch = search.toLowerCase();
+
+    data.boards.forEach((board) => {
+      if (!result[board.vendor.slug]) {
+        result[board.vendor.slug] = [];
+      }
+
+      const matchesVendor = !vendor || board.vendor.slug === vendor;
+      const matchesSearch =
+        !search ||
+        board.name.toLowerCase().includes(lowerSearch) ||
+        board.devices.some((device) =>
+          device.name.toLowerCase().includes(lowerSearch)
+        );
+
+      if (matchesVendor && matchesSearch) {
+        result[board.vendor.slug].push(board);
+      }
+    });
+
+    return result;
+  }, [data.boards, search, vendor]);
+
+  const handleFilter = (newSearch: string, newVendor: string) => {
     const params = new URLSearchParams();
-    if (search) {
-      params.append('search', encodeURIComponent(search));
+    if (newSearch) {
+      params.set('search', encodeURIComponent(newSearch));
     }
-    if (vendor) {
-      params.append('vendor', encodeURIComponent(vendor));
+    if (newVendor) {
+      params.set('vendor', encodeURIComponent(newVendor));
     }
     router.push(`/?${params.toString()}`);
   };
