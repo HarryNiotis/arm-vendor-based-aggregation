@@ -26,18 +26,19 @@ export function Boards() {
   // the react compiler in this project, they should be optimized
 
   const seen = new Set<string>();
-  const vendors: Vendor[] = data.boards.reduce<Vendor[]>((acc, board) => {
-    if (!seen.has(board.vendor.slug)) {
-      seen.add(board.vendor.slug);
-      acc.push(board.vendor);
-    }
-    return acc;
-  }, []);
+  const vendors: Vendor[] =
+    data?.boards.reduce<Vendor[]>((acc, board) => {
+      if (!seen.has(board.vendor.slug)) {
+        seen.add(board.vendor.slug);
+        acc.push(board.vendor);
+      }
+      return acc;
+    }, []) ?? [];
 
   const boardsByVendor: Record<string, Board[]> = {};
   const lowerSearch = search.toLowerCase();
 
-  data.boards.forEach((board) => {
+  data?.boards.forEach((board) => {
     if (!boardsByVendor[board.vendor.slug]) {
       boardsByVendor[board.vendor.slug] = [];
     }
