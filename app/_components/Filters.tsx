@@ -28,6 +28,7 @@ export function Filters({ vendors, onFilter }: FiltersProps) {
   const [selectedVendor, setSelectedVendor] = useState(
     vendors.find((v) => v.slug === params.get('vendor'))?.name ?? ''
   );
+  const buttonsDisabled = search === '' && selectedVendor === '';
 
   const handleFilter = () => {
     onFilter(
@@ -81,10 +82,14 @@ export function Filters({ vendors, onFilter }: FiltersProps) {
         </Combobox>
       </div>
       <div className="mb-6 flex flex-col gap-3">
-        <Button className="w-full" onClick={handleFilter}>
+        <Button
+          className="w-full"
+          disabled={buttonsDisabled}
+          onClick={handleFilter}
+        >
           Filter
         </Button>
-        <Button className="w-full" onClick={handleReset}>
+        <Button className="w-full" variant="secondary" onClick={handleReset}>
           Reset
         </Button>
       </div>

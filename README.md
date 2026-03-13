@@ -4,7 +4,7 @@ A Next.js web application for aggregating arm vendors, boards and devices. It pr
 
 ## Challenge Overview
 
-The challenge stated that I should spend up to 3 hours, but since I was advised there is no time limit, I ended up spending around 7. I had the time available and also wanted to see how far I can take it before deciding I should stop and submit it.
+The challenge stated that I should spend up to 3 hours, but since I was advised there is no time limit, I ended up spending around 9. I had the time available and also wanted to see how far I can take it before deciding I should stop and submit it.
 
 I decided to try and complete the following tasks in the 3 hour time window as a first pass:
 
