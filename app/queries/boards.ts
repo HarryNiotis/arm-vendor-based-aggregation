@@ -1,4 +1,3 @@
-import { query } from '@/api/ApolloClient';
 import { gql } from '@apollo/client';
 
 export type Vendor = {
@@ -19,12 +18,8 @@ export type Board = {
   devices: Device[];
 };
 
-type GetBoardsResponse = {
-  boards: Board[];
-};
-
-const GET_BOARDS = gql`
-  query {
+export const GET_BOARDS = gql`
+  query GetBoards {
     boards {
       id
       name
@@ -42,15 +37,3 @@ const GET_BOARDS = gql`
     }
   }
 `;
-// GraphQL query to fetch boards, their vendors, and associated devices with processor cores
-export const getBoards = async (): Promise<Board[]> => {
-  try {
-    const { data } = await query<GetBoardsResponse>({
-      query: GET_BOARDS,
-    });
-    return data?.boards || [];
-  } catch (error) {
-    console.error('Error fetching boards:', error);
-    return [];
-  }
-};

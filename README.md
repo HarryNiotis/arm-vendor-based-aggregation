@@ -16,7 +16,7 @@ I achieved all of the above in that window, so I could submit the application at
 
 So the follow up part of the plan was
 
-- Try to leverage the Apollo GraphQL caching
+- Try to leverage the Apollo GraphQL caching and SSR support
 - Use URL state management to drive the filters
 - Add some basic tests for the components I created
 
@@ -28,7 +28,7 @@ This allows for browser navigation, leveraging the browser cache, bookmarks but,
 
 A number of improvements could follow given time
 
-- Fetching of all the data at load is inefficient and relies on caching. There is expensive filtering logic in the server that happens on each request, regardless of caching. Having inspected the GraphQL endpoints, we could switch to using operations like `searchBoards` and `searchDevices` to optimize filtering. Since we have URL state management, it is a question of handling the search parameters accordingly
+- Fetching of all the data at load is inefficient and relies on caching. There is expensive filtering logic in the component, regardless of caching/memoization. Having inspected the GraphQL endpoints, we could switch to using operations like `searchBoards` and `searchDevices` to optimize filtering. Since we have URL state management, it is a question of handling the search parameters accordingly
 - The UI is built with a combination of Accordion and Collapsible components from shadcn. It does not support any pagination and navigation can be a bit tricky. Ideally this should be replaced with a proper headless table like TanStack table that can support a number of scenarios and UI variants.
 - You can only select one vendor. This can be extended to allow multiple selections and leverage the URL parameters accordingly
 - Boards with no devices are visible, this can be improved

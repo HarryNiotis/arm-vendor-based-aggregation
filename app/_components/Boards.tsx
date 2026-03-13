@@ -1,26 +1,67 @@
 'use client';
 
+import { useSuspenseQuery } from '@apollo/client/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Filters } from './Filters';
 import { Results } from './Results';
-import { Board, Vendor } from '../queries/boards';
-import { useRouter } from 'next/navigation';
+import { Board, Vendor, GET_BOARDS } from '../queries/boards';
 
-type BoardsProps =  {
-  vendors: Vendor[];
-  boardsByVendor: Record<string, Board[]>;
+type GetBoardsData = {
+  boards: Board[];
 };
 
-export function Boards({ vendors, boardsByVendor }: BoardsProps) {
+export function Boards() {
+  const { data } = useSuspenseQuery<GetBoardsData>(GET_BOARDS);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // Handle filter changes by updating the URL search parameters
-  const handleFilter = (search: string, vendor: string) => {
-    const params = new URLSearchParams();
-    if (search) {
-      params.append('search', encodeURIComponent(search));
+  const search = searchParams.get('search')
+    ? decodeURIComponent(searchParams.get('search')!)
+    : '';
+  const vendor = searchParams.get('vendor')
+    ? decodeURIComponent(searchParams.get('vendor')!)
+    : '';
+
+  // The following aggregation would normally be memoized, but since we are using
+  // the react compiler in this project, they should be optimized
+
+  const seen = new Set<string>();
+  const vendors: Vendor[] = data.boards.reduce<Vendor[]>((acc, board) => {
+    if (!seen.has(board.vendor.slug)) {
+      seen.add(board.vendor.slug);
+      acc.push(board.vendor);
     }
-    if (vendor) {
-      params.append('vendor', encodeURIComponent(vendor));
+    return acc;
+  }, []);
+
+  const boardsByVendor: Record<string, Board[]> = {};
+  const lowerSearch = search.toLowerCase();
+
+  data.boards.forEach((board) => {
+    if (!boardsByVendor[board.vendor.slug]) {
+      boardsByVendor[board.vendor.slug] = [];
+    }
+
+    const matchesVendor = !vendor || board.vendor.slug === vendor;
+    const matchesSearch =
+      !search ||
+      board.name.toLowerCase().includes(lowerSearch) ||
+      board.devices.some((device) =>
+        device.name.toLowerCase().includes(lowerSearch)
+      );
+
+    if (matchesVendor && matchesSearch) {
+      boardsByVendor[board.vendor.slug].push(board);
+    }
+  });
+
+  const handleFilter = (newSearch: string, newVendor: string) => {
+    const params = new URLSearchParams();
+    if (newSearch) {
+      params.set('search', encodeURIComponent(newSearch));
+    }
+    if (newVendor) {
+      params.set('vendor', encodeURIComponent(newVendor));
     }
     router.push(`/?${params.toString()}`);
   };
