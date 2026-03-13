@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useSuspenseQuery } from '@apollo/client/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Filters } from './Filters';
@@ -23,7 +22,9 @@ export function Boards() {
     ? decodeURIComponent(searchParams.get('vendor')!)
     : '';
 
-  const vendors: Vendor[] = useMemo(() => {
+  // This could be memoized but we are using react compiler in this
+  // solution that should take care of this.
+  const vendors: Vendor[] = (() => {
     const seen = new Set<string>();
     return data.boards.reduce<Vendor[]>((acc, board) => {
       if (!seen.has(board.vendor.slug)) {
@@ -32,9 +33,9 @@ export function Boards() {
       }
       return acc;
     }, []);
-  }, [data.boards]);
+  })();
 
-  const boardsByVendor: Record<string, Board[]> = useMemo(() => {
+  const boardsByVendor: Record<string, Board[]> = (() => {
     const result: Record<string, Board[]> = {};
     const lowerSearch = search.toLowerCase();
 
@@ -57,7 +58,7 @@ export function Boards() {
     });
 
     return result;
-  }, [data.boards, search, vendor]);
+  })();
 
   const handleFilter = (newSearch: string, newVendor: string) => {
     const params = new URLSearchParams();

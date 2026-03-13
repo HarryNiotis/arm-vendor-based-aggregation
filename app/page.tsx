@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
-import { Loader2 } from 'lucide-react';
 import { Boards } from './_components/Boards';
+import { Loader } from './_components/Loader';
 import { PreloadQuery } from '@/api/ApolloClient';
 import { GET_BOARDS } from './queries/boards';
 
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <PreloadQuery query={GET_BOARDS}>
-      <Suspense fallback={<Loader2 className="animate-spin" />}>
+      <Suspense fallback={<Loader />}>
         <Boards />
       </Suspense>
     </PreloadQuery>
