@@ -81,10 +81,19 @@ export function Filters({ vendors, onFilter }: FiltersProps) {
         </Combobox>
       </div>
       <div className="mb-6 flex flex-col gap-3">
-        <Button className="w-full" onClick={handleFilter}>
+        <Button
+          className="w-full"
+          disabled={search === '' && selectedVendor === ''}
+          onClick={handleFilter}
+        >
           Filter
         </Button>
-        <Button className="w-full" onClick={handleReset}>
+        <Button
+          className="w-full"
+          variant="secondary"
+          disabled={search === '' && selectedVendor === ''}
+          onClick={handleReset}
+        >
           Reset
         </Button>
       </div>
