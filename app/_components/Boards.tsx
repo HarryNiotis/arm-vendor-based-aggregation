@@ -22,43 +22,38 @@ export function Boards() {
     ? decodeURIComponent(searchParams.get('vendor')!)
     : '';
 
-  // This could be memoized but we are using react compiler in this
-  // solution that should take care of this.
-  const vendors: Vendor[] = (() => {
-    const seen = new Set<string>();
-    return data.boards.reduce<Vendor[]>((acc, board) => {
-      if (!seen.has(board.vendor.slug)) {
-        seen.add(board.vendor.slug);
-        acc.push(board.vendor);
-      }
-      return acc;
-    }, []);
-  })();
+  // The following aggregation would normally be memoized, but since we are using
+  // the react compiler in this project, they should be optimized
 
-  const boardsByVendor: Record<string, Board[]> = (() => {
-    const result: Record<string, Board[]> = {};
-    const lowerSearch = search.toLowerCase();
+  const seen = new Set<string>();
+  const vendors: Vendor[] = data.boards.reduce<Vendor[]>((acc, board) => {
+    if (!seen.has(board.vendor.slug)) {
+      seen.add(board.vendor.slug);
+      acc.push(board.vendor);
+    }
+    return acc;
+  }, []);
 
-    data.boards.forEach((board) => {
-      if (!result[board.vendor.slug]) {
-        result[board.vendor.slug] = [];
-      }
+  const boardsByVendor: Record<string, Board[]> = {};
+  const lowerSearch = search.toLowerCase();
 
-      const matchesVendor = !vendor || board.vendor.slug === vendor;
-      const matchesSearch =
-        !search ||
-        board.name.toLowerCase().includes(lowerSearch) ||
-        board.devices.some((device) =>
-          device.name.toLowerCase().includes(lowerSearch)
-        );
+  data.boards.forEach((board) => {
+    if (!boardsByVendor[board.vendor.slug]) {
+      boardsByVendor[board.vendor.slug] = [];
+    }
 
-      if (matchesVendor && matchesSearch) {
-        result[board.vendor.slug].push(board);
-      }
-    });
+    const matchesVendor = !vendor || board.vendor.slug === vendor;
+    const matchesSearch =
+      !search ||
+      board.name.toLowerCase().includes(lowerSearch) ||
+      board.devices.some((device) =>
+        device.name.toLowerCase().includes(lowerSearch)
+      );
 
-    return result;
-  })();
+    if (matchesVendor && matchesSearch) {
+      boardsByVendor[board.vendor.slug].push(board);
+    }
+  });
 
   const handleFilter = (newSearch: string, newVendor: string) => {
     const params = new URLSearchParams();
