@@ -13,20 +13,20 @@ import {
 import { Search } from 'lucide-react';
 import { useState } from 'react';
 import { Vendor } from '../queries/boards';
-import { useSearchParams } from 'next/navigation';
 
-type FiltersProps = {
+export type FiltersProps = {
   vendors: Vendor[];
+  search: string;
+  vendor: string;
   onFilter: (search: string, vendor: string) => void;
 };
 
 // This component is responsible for rendering the filters and handling user input
 //
-export function Filters({ vendors, onFilter }: FiltersProps) {
-  const params = useSearchParams();
-  const [search, setSearch] = useState(params.get('search') ?? '');
+export function Filters({ vendors, search: initialSearch, vendor: initialVendor, onFilter }: FiltersProps) {
+  const [search, setSearch] = useState(initialSearch);
   const [selectedVendor, setSelectedVendor] = useState(
-    vendors.find((v) => v.slug === params.get('vendor'))?.name ?? ''
+    vendors.find((v) => v.slug === initialVendor)?.name ?? ''
   );
   const buttonsDisabled = search === '' && selectedVendor === '';
 

@@ -9,11 +9,19 @@ export const metadata: Metadata = {
   title: 'Vendor Aggregation',
 };
 
-export default function Page() {
+type PageProps = {
+  searchParams: Promise<{ search?: string; vendor?: string }>;
+};
+
+export default async function Page({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const search = params.search ? decodeURIComponent(params.search) : '';
+  const vendor = params.vendor ? decodeURIComponent(params.vendor) : '';
+
   return (
     <PreloadQuery query={GET_BOARDS}>
       <Suspense fallback={<Loader />}>
-        <Boards />
+        <Boards search={search} vendor={vendor} />
       </Suspense>
     </PreloadQuery>
   );

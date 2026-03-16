@@ -1,7 +1,7 @@
 'use client';
 
 import { useSuspenseQuery } from '@apollo/client/react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Filters } from './Filters';
 import { Results } from './Results';
 import { Board, Vendor, GET_BOARDS } from '../queries/boards';
@@ -10,17 +10,14 @@ type GetBoardsData = {
   boards: Board[];
 };
 
-export function Boards() {
+export type BoardsProps = {
+  search: string;
+  vendor: string;
+};
+
+export function Boards({ search, vendor }: BoardsProps) {
   const { data } = useSuspenseQuery<GetBoardsData>(GET_BOARDS);
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const search = searchParams.get('search')
-    ? decodeURIComponent(searchParams.get('search')!)
-    : '';
-  const vendor = searchParams.get('vendor')
-    ? decodeURIComponent(searchParams.get('vendor')!)
-    : '';
 
   // The following aggregation would normally be memoized, but since we are using
   // the react compiler in this project, they should be optimized
@@ -69,7 +66,7 @@ export function Boards() {
 
   return (
     <div className="flex flex-1">
-      <Filters vendors={vendors} onFilter={handleFilter} />
+      <Filters vendors={vendors} search={search} vendor={vendor} onFilter={handleFilter} />
       <Results vendors={vendors} boardsByVendor={boardsByVendor} />
     </div>
   );
