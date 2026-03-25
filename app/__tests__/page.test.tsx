@@ -1,59 +1,62 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Page from '../page';
-import * as boardsModule from '../queries/boards';
-import type { Board, Vendor } from '../queries/boards';
 
-vi.mock('../queries/boards', () => ({
-  getBoards: vi.fn(),
-}));
-
-vi.mock('../_components/Boards', () => ({
-  Boards: ({ vendors, boardsByVendor }: { vendors: Vendor[]; boardsByVendor: Record<string, Board[]> }) => (
-    <div data-testid="boards-component">
-      <div data-testid="vendor-count">{vendors.length}</div>
-      <div data-testid="board-count">
-        {Object.values(boardsByVendor).flat().length}
-      </div>
-    </div>
+vi.mock('@/api/ApolloClient', () => ({
+  PreloadQuery: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
   ),
 }));
 
-const mockVendor: Vendor = { name: 'Test Vendor', slug: 'test-vendor' };
-const mockBoards: Board[] = [
-  {
-    id: '1',
-    name: 'Test Board',
-    vendor: mockVendor,
-    devices: [
-      { id: 'd1', name: 'Test Device', processors: [{ core: 'Cortex-M4' }] },
-    ],
+vi.mock('../queries/boards', () => ({
+  GET_BOARDS: {},
+}));
+
+import type { BoardsProps } from '../_components/Boards';
+
+const mockBoards = vi.fn();
+vi.mock('../_components/Boards', () => ({
+  Boards: (props: BoardsProps) => {
+    mockBoards(props);
+    return <div data-testid="boards-component" />;
   },
-];
+}));
 
 describe('Page', () => {
+  beforeEach(() => {
+    mockBoards.mockClear();
+  });
+
   it('renders the Boards component', async () => {
-    vi.mocked(boardsModule.getBoards).mockResolvedValue(mockBoards);
+    render(await Page({ searchParams: Promise.resolve({}) }));
+    expect(screen.getByTestId('boards-component')).toBeInTheDocument();
+  });
 
-    const { container } = render(
-      await Page({ searchParams: Promise.resolve({}) })
+  it('passes empty search and vendor when searchParams is empty', async () => {
+    render(await Page({ searchParams: Promise.resolve({}) }));
+    expect(mockBoards).toHaveBeenCalledWith(
+      expect.objectContaining({ search: '', vendor: '' }),
     );
-    expect(
-      container.querySelector('[data-testid="boards-component"]')
-    ).toBeInTheDocument();
   });
 
-  it('passes the correct vendor count to Boards component', async () => {
-    vi.mocked(boardsModule.getBoards).mockResolvedValue(mockBoards);
-
-    render(await Page({ searchParams: Promise.resolve({}) }));
-    expect(screen.getByTestId('vendor-count')).toHaveTextContent('1');
+  it('passes decoded search prop to Boards', async () => {
+    render(await Page({ searchParams: Promise.resolve({ search: 'raspberry%20pi' }) }));
+    expect(mockBoards).toHaveBeenCalledWith(
+      expect.objectContaining({ search: 'raspberry pi', vendor: '' }),
+    );
   });
 
-  it('passes the correct board count to Boards component', async () => {
-    vi.mocked(boardsModule.getBoards).mockResolvedValue(mockBoards);
+  it('passes decoded vendor prop to Boards', async () => {
+    render(await Page({ searchParams: Promise.resolve({ vendor: 'acme-corp' }) }));
+    expect(mockBoards).toHaveBeenCalledWith(
+      expect.objectContaining({ search: '', vendor: 'acme-corp' }),
+    );
+  });
 
-    render(await Page({ searchParams: Promise.resolve({}) }));
-    expect(screen.getByTestId('board-count')).toHaveTextContent('1');
+  it('passes both decoded search and vendor props to Boards', async () => {
+    render(await Page({ searchParams: Promise.resolve({ search: 'pi', vendor: 'widget-inc' }) }));
+    expect(mockBoards).toHaveBeenCalledWith(
+      expect.objectContaining({ search: 'pi', vendor: 'widget-inc' }),
+    );
   });
 });

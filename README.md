@@ -4,7 +4,7 @@ A Next.js web application for aggregating arm vendors, boards and devices. It pr
 
 ## Challenge Overview
 
-The challenge stated that I should spend up to 3 hours, but since I was advised there is no time limit, I ended up spending around 9. I had the time available and also wanted to see how far I can take it before deciding I should stop and submit it.
+The challenge stated that I should spend up to 3 hours, but since I was advised there is no time limit, I ended up spending around 13. I had the time available and also wanted to see how far I can take it before deciding I should stop and submit it.
 
 I decided to try and complete the following tasks in the 3 hour time window as a first pass:
 
@@ -16,7 +16,7 @@ I achieved all of the above in that window, so I could submit the application at
 
 So the follow up part of the plan was
 
-- Try to leverage the Apollo GraphQL caching
+- Try to leverage the Apollo GraphQL caching and SSR support
 - Use URL state management to drive the filters
 - Add some basic tests for the components I created
 
@@ -28,10 +28,9 @@ This allows for browser navigation, leveraging the browser cache, bookmarks but,
 
 A number of improvements could follow given time
 
-- Fetching of all the data at load is inefficient and relies on caching. There is expensive filtering logic in the server that happens on each request, regardless of caching. Having inspected the GraphQL endpoints, we could switch to using operations like `searchBoards` and `searchDevices` to optimize filtering. Since we have URL state management, it is a question of handling the search parameters accordingly
+- Fetching of all the data at load is inefficient and relies on caching. There is expensive filtering logic in the component, regardless of caching/memoization. Having inspected the GraphQL endpoints, we could switch to using operations like `searchBoards` and `searchDevices` to optimize filtering. Since we have URL state management, it is a question of handling the search parameters accordingly
 - The UI is built with a combination of Accordion and Collapsible components from shadcn. It does not support any pagination and navigation can be a bit tricky. Ideally this should be replaced with a proper headless table like TanStack table that can support a number of scenarios and UI variants.
 - You can only select one vendor. This can be extended to allow multiple selections and leverage the URL parameters accordingly
-- Boards with no devices are visible, this can be improved
 - There is only one root route in the app. Ideally we would break some of the logic in more routes, so we can also support board and device overviews.
 - There are tests for most of the components, written mainly with the help of Copilot, but ideally we would need a more comprehensive suite
 
